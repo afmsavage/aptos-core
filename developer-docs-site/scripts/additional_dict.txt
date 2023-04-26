@@ -45,6 +45,7 @@ CoinStore
 CoinType
 CollectionData
 Concat
+ConstructorRef
 Ctrl
 DAO
 DAO
@@ -55,6 +56,7 @@ DECL
 DM
 DNS
 Dapps
+DeleteRef
 Deref
 Deref
 Destructuring
@@ -101,6 +103,7 @@ Enums
 EpochChangeProof
 Ethereum
 ExternalMarkdown
+ExtendRef
 FAQ
 FLAC
 FT
@@ -138,6 +141,7 @@ Kubernetes
 LLVM
 Labs's
 Leaderboard
+LiquidityPool
 Liveness
 MOV
 MSL
@@ -169,6 +173,8 @@ ORM
 Octa
 Octas
 Ohlone
+ObjectCore
+ObjectGroup
 OpenAPI
 OptionalAggregator
 PFN
@@ -233,6 +239,7 @@ TransactionBuilder
 TransactionBuilderABI
 TransactionFee
 Transactional
+TransferRef
 Traw
 TypeScript
 UB
@@ -303,6 +310,7 @@ cli
 clippy
 cn
 codebase
+composable
 config
 configs
 const
@@ -347,6 +355,7 @@ gcloud
 gcp
 gcs
 groupId
+guid
 haproxy
 hardcoded
 hippospace
@@ -498,6 +507,7 @@ txt
 typesafe
 uint
 unexportable
+ungated
 unixtime
 unmount
 unscoped
@@ -514,6 +524,7 @@ useState
 useWallet
 usecase
 utc
+xFD
 validator
 validator's
 validatorSet
