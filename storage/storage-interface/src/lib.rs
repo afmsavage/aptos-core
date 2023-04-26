@@ -628,6 +628,23 @@ pub trait DbWriter: Send + Sync {
     ) -> Result<()> {
         unimplemented!()
     }
+
+    /// Persist transaction block. Called by the executor module when committing blocks during normal operation.
+    /// See [`AptosDB::save_transaction_block`].
+    ///
+    /// [`AptosDB::save_transaction_block`]:
+    /// ../aptosdb/struct.AptosDB.html#method.save_transaction_block
+    fn save_transaction_blocks(
+        &self,
+        txns_to_commit: &[TransactionToCommit],
+        first_version: Version,
+        base_state_version: Option<Version>,
+        ledger_info_with_sigs: Option<&LedgerInfoWithSignatures>,
+        sync_commit: bool,
+        latest_in_memory_state: StateDelta,
+    ) -> Result<()> {
+        unimplemented!()
+    }
 }
 
 #[derive(Clone)]
