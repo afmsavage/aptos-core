@@ -83,7 +83,19 @@ impl ChunkOutput {
         fail_point!("executor::vm_execute_chunk", |_| {
             Err(anyhow::anyhow!("Injected error in apply_to_ledger."))
         });
-        ApplyChunkOutput::apply(self, base_view)
+        ApplyChunkOutput::apply_chunk(self, base_view)
+    }
+
+    pub fn apply_to_ledger_for_block(
+        self,
+        base_view: &ExecutedTrees,
+    ) -> Result<(ExecutedChunk, Vec<Transaction>, Vec<Transaction>)> {
+        fail_point!("executor::vm_execute_chunk", |_| {
+            Err(anyhow::anyhow!(
+                "Injected error in apply_to_ledger_for_block."
+            ))
+        });
+        ApplyChunkOutput::apply_block(self, base_view)
     }
 
     pub fn trace_log_transaction_status(&self) {
