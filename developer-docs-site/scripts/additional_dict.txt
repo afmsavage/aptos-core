@@ -539,3 +539,4 @@ extensibility
 MultiSig
 IndexerClient
 Hasura
+AptosClient
