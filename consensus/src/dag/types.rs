@@ -13,13 +13,14 @@ use aptos_types::{
 };
 use std::collections::{BTreeMap, HashSet};
 use serde::{Serialize, Deserialize};
+
 // pub(crate) trait MissingPeers {
 //     fn get_peers_signatures() -> HashSet<PeerId>;
 // }
 
 #[allow(dead_code)]
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
-pub struct IncrementalNodeCertificateState {
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub(crate) struct IncrementalNodeCertificateState {
     signed_node_digest_info: SignedNodeDigestInfo,
     aggregated_signature: BTreeMap<PeerId, bls12381::Signature>,
 }
@@ -72,19 +73,19 @@ impl IncrementalNodeCertificateState {
             .is_ok()
     }
 
-    pub(crate) fn take(&self, validator_verifier: &ValidatorVerifier) -> NodeCertificate {
+    pub(crate) fn take(self, validator_verifier: &ValidatorVerifier) -> NodeCertificate {
         let proof = match validator_verifier
-            .aggregate_signatures(&PartialSignatures::new(self.aggregated_signature.clone()))
+            .aggregate_signatures(&PartialSignatures::new(self.aggregated_signature))
         {
-            Ok(sig) => NodeCertificate::new(self.signed_node_digest_info.clone(), sig),
+            Ok(sig) => NodeCertificate::new(self.signed_node_digest_info, sig),
             Err(e) => unreachable!("Cannot aggregate signatures on digest err = {:?}", e),
         };
         proof
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
-pub struct AckSet {
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub(crate) struct AckSet {
     digest: HashValue,
     set: HashSet<PeerId>,
 }

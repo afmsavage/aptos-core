@@ -49,6 +49,7 @@ use futures::{channel::mpsc, StreamExt};
 use maplit::hashmap;
 use std::{collections::HashMap, iter::FromIterator, sync::Arc};
 use tokio::runtime::Runtime;
+use crate::dag::reliable_broadcast::storage::MockReliableBroadcastDB;
 
 /// Auxiliary struct that is preparing SMR for the test
 pub struct SMRNode {
@@ -138,6 +139,7 @@ impl SMRNode {
             aptos_channels::new(1_024, &counters::PENDING_SELF_MESSAGES);
 
         let quorum_store_storage = Arc::new(MockQuorumStoreDB::new());
+        let mock_rb_db = Arc::new(MockReliableBroadcastDB::new());
 
         let epoch_mgr = EpochManager::new(
             &config,
@@ -150,6 +152,7 @@ impl SMRNode {
             storage.clone(),
             quorum_store_storage,
             reconfig_listener,
+            mock_rb_db,
         );
         let (network_task, network_receiver) =
             NetworkTask::new(network_service_events, self_receiver);

@@ -92,6 +92,7 @@ use std::{
     sync::Arc,
     time::Duration,
 };
+use crate::dag::reliable_broadcast::storage::ReliableBroadcastStorage;
 
 /// Range of rounds (window) that we might be calling proposer election
 /// functions with at any given time, in addition to the proposer history length.
@@ -141,6 +142,7 @@ pub struct EpochManager {
     quorum_store_storage: Arc<dyn QuorumStoreStorage>,
     batch_retrieval_tx:
         Option<aptos_channel::Sender<AccountAddress, IncomingBatchRetrievalRequest>>,
+    rb_storage: Arc<dyn ReliableBroadcastStorage>,
 }
 
 #[allow(dead_code)]
@@ -156,6 +158,7 @@ impl EpochManager {
         storage: Arc<dyn PersistentLivenessStorage>,
         quorum_store_storage: Arc<dyn QuorumStoreStorage>,
         reconfig_events: ReconfigNotificationListener,
+        rb_storage: Arc<dyn ReliableBroadcastStorage>,
     ) -> Self {
         let author = node_config.validator_network.as_ref().unwrap().peer_id();
         let config = node_config.consensus.clone();
@@ -188,6 +191,7 @@ impl EpochManager {
             quorum_store_coordinator_tx: None,
             quorum_store_storage,
             batch_retrieval_tx: None,
+            rb_storage,
         }
     }
 
@@ -748,6 +752,7 @@ impl EpochManager {
             self.epoch(),
             self.author,
             self.config.dag_config.clone(),
+            self.rb_storage.clone(),
             payload_client,
             network_sender,
             epoch_state.verifier.clone(),
