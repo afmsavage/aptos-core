@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::config::{
-    config_sanitizer::ConfigSanitizer, node_config_loader::NodeType, Error, NodeConfig,
+    config_optimizer::ConfigOptimizer, config_sanitizer::ConfigSanitizer,
+    node_config_loader::NodeType, Error, NodeConfig,
 };
 use aptos_types::chain_id::ChainId;
 use serde::{Deserialize, Serialize};
+use serde_yaml::Value;
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]
 #[serde(default, deny_unknown_fields)]
@@ -112,6 +114,31 @@ impl ConfigSanitizer for PeerMonitoringServiceConfig {
     }
 }
 
+impl ConfigOptimizer for PeerMonitoringServiceConfig {
+    fn optimize(
+        node_config: &mut NodeConfig,
+        local_config_yaml: &Value,
+        _node_type: NodeType,
+        chain_id: ChainId,
+    ) -> Result<bool, Error> {
+        let peer_monitoring_config = &mut node_config.peer_monitoring_service;
+        let local_monitoring_config_yaml = &local_config_yaml["peer_monitoring_service"];
+
+        // Enable the peer monitoring service client for all networks
+        // that aren't testnet or mainnet (for testing).
+        let mut modified_config = false;
+        if !chain_id.is_testnet()
+            && !chain_id.is_mainnet()
+            && local_monitoring_config_yaml["enable_peer_monitoring_client"].is_null()
+        {
+            peer_monitoring_config.enable_peer_monitoring_client = true;
+            modified_config = true;
+        }
+
+        Ok(modified_config)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -143,5 +170,97 @@ mod tests {
         )
         .unwrap_err();
         assert!(matches!(error, Error::ConfigSanitizerFailed(_, _)));
+    }
+
+    #[test]
+    fn test_optimize_enable_monitoring_client() {
+        // Create a node config with the peer monitoring client disabled
+        let mut node_config = create_config_with_disabled_client();
+
+        // Optimize the config and verify modifications are made
+        let modified_config = PeerMonitoringServiceConfig::optimize(
+            &mut node_config,
+            &serde_yaml::from_str("{}").unwrap(), // An empty local config,
+            NodeType::ValidatorFullnode,
+            ChainId::test(),
+        )
+        .unwrap();
+        assert!(modified_config);
+
+        // Verify that the peer monitoring client is enabled
+        assert!(
+            node_config
+                .peer_monitoring_service
+                .enable_peer_monitoring_client
+        );
+    }
+
+    #[test]
+    fn test_optimize_enable_monitoring_client_mainnet() {
+        // Create a node config with the peer monitoring client disabled
+        let node_config = create_config_with_disabled_client();
+
+        // Test that the peer monitoring client is not enabled for testnet and mainnet
+        for chain_id in &[ChainId::testnet(), ChainId::mainnet()] {
+            // Optimize the config and verify no modifications are made
+            let modified_config = PeerMonitoringServiceConfig::optimize(
+                &mut node_config.clone(),
+                &serde_yaml::from_str("{}").unwrap(), // An empty local config,
+                NodeType::Validator,
+                *chain_id,
+            )
+            .unwrap();
+            assert!(!modified_config);
+
+            // Verify that the peer monitoring client is disabled
+            assert!(
+                !node_config
+                    .peer_monitoring_service
+                    .enable_peer_monitoring_client
+            );
+        }
+    }
+
+    #[test]
+    fn test_optimize_enable_monitoring_client_no_override() {
+        // Create a node config with the peer monitoring client disabled
+        let node_config = create_config_with_disabled_client();
+
+        // Create a local config YAML with the peer monitoring client disabled
+        let local_config_yaml = serde_yaml::from_str(
+            r#"
+            peer_monitoring_service:
+                enable_peer_monitoring_client: false
+            "#,
+        )
+        .unwrap();
+
+        // Optimize the config and verify no modifications are made
+        let modified_config = PeerMonitoringServiceConfig::optimize(
+            &mut node_config.clone(),
+            &local_config_yaml,
+            NodeType::PublicFullnode,
+            ChainId::test(),
+        )
+        .unwrap();
+        assert!(!modified_config);
+
+        // Verify that the peer monitoring client is still disabled
+        assert!(
+            !node_config
+                .peer_monitoring_service
+                .enable_peer_monitoring_client
+        );
+    }
+
+    /// Creates a node config with the peer monitoring client disabled
+    fn create_config_with_disabled_client() -> NodeConfig {
+        NodeConfig {
+            peer_monitoring_service: PeerMonitoringServiceConfig {
+                enable_peer_monitoring_client: false,
+                ..Default::default()
+            },
+            ..Default::default()
+        }
     }
 }
