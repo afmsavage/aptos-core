@@ -15,7 +15,7 @@
 use once_cell::sync::Lazy;
 
 #[rustfmt::skip]
-pub static PACKAGE_METADATA: Lazy<Vec<u8>> = Lazy::new(|| {
+pub static PACKAGE_SIMPLE_METADATA: Lazy<Vec<u8>> = Lazy::new(|| {
 	vec![
 		13, 71, 101, 110, 101, 114, 105, 99, 77, 111, 100, 117, 108, 101, 1, 0, 0, 0,
 		0, 0, 0, 0, 0, 64, 68, 50, 52, 53, 56, 54, 54, 51, 49, 66, 53, 52,
@@ -50,7 +50,7 @@ pub static PACKAGE_METADATA: Lazy<Vec<u8>> = Lazy::new(|| {
 });
 
 #[rustfmt::skip]
-pub static MODULE_AMBASSADOR: Lazy<Vec<u8>> = Lazy::new(|| {
+pub static MODULE_SIMPLE_AMBASSADOR: Lazy<Vec<u8>> = Lazy::new(|| {
 	vec![
 		161, 28, 235, 11, 6, 0, 0, 0, 12, 1, 0, 18, 2, 18, 56, 3, 74, 129,
 		1, 4, 203, 1, 8, 5, 211, 1, 191, 1, 7, 146, 3, 192, 5, 8, 210, 8,
@@ -171,7 +171,7 @@ pub static MODULE_AMBASSADOR: Lazy<Vec<u8>> = Lazy::new(|| {
 });
 
 #[rustfmt::skip]
-pub static MODULE_SIMPLE: Lazy<Vec<u8>> = Lazy::new(|| {
+pub static MODULE_SIMPLE_SIMPLE: Lazy<Vec<u8>> = Lazy::new(|| {
 	vec![
 		161, 28, 235, 11, 6, 0, 0, 0, 11, 1, 0, 8, 2, 8, 20, 3, 28, 115,
 		5, 143, 1, 174, 1, 7, 189, 2, 226, 2, 8, 159, 5, 64, 6, 223, 5, 115,
@@ -313,7 +313,7 @@ pub static MODULE_SIMPLE: Lazy<Vec<u8>> = Lazy::new(|| {
 });
 
 #[rustfmt::skip]
-pub static MODULE_TOKEN_V1: Lazy<Vec<u8>> = Lazy::new(|| {
+pub static MODULE_SIMPLE_TOKEN_V1: Lazy<Vec<u8>> = Lazy::new(|| {
 	vec![
 		161, 28, 235, 11, 6, 0, 0, 0, 11, 1, 0, 16, 2, 16, 42, 3, 58, 167,
 		1, 4, 225, 1, 12, 5, 237, 1, 139, 2, 7, 248, 3, 185, 6, 8, 177, 10,
@@ -450,8 +450,8 @@ pub static MODULE_TOKEN_V1: Lazy<Vec<u8>> = Lazy::new(|| {
 });
 
 #[rustfmt::skip]
-pub static MODULES: Lazy<Vec<Vec<u8>>> = Lazy::new(|| { vec![
-	MODULE_AMBASSADOR.to_vec(),
-	MODULE_SIMPLE.to_vec(),
-	MODULE_TOKEN_V1.to_vec(),
+pub static MODULES_SIMPLE: Lazy<Vec<Vec<u8>>> = Lazy::new(|| { vec![
+	MODULE_SIMPLE_AMBASSADOR.to_vec(),
+	MODULE_SIMPLE_SIMPLE.to_vec(),
+	MODULE_SIMPLE_TOKEN_V1.to_vec(),
 ]});

@@ -28,11 +28,21 @@ use std::collections::HashMap;
 // Functions to load and update the original package
 //
 
-pub fn load_package() -> (HashMap<String, CompiledModule>, PackageMetadata) {
-    let metadata = bcs::from_bytes::<PackageMetadata>(&raw_module_data::PACKAGE_METADATA)
+pub fn load_package_simple() -> (HashMap<String, CompiledModule>, PackageMetadata) {
+    load_package(
+        &raw_module_data::PACKAGE_SIMPLE_METADATA,
+        &raw_module_data::MODULES_SIMPLE,
+    )
+}
+
+pub fn load_package(
+    package_bytes: &[u8],
+    modules_bytes: &[Vec<u8>],
+) -> (HashMap<String, CompiledModule>, PackageMetadata) {
+    let metadata = bcs::from_bytes::<PackageMetadata>(package_bytes)
         .expect("PackageMetadata for GenericModule must deserialize");
     let mut modules = HashMap::new();
-    for module_content in &*raw_module_data::MODULES {
+    for module_content in modules_bytes {
         let module =
             CompiledModule::deserialize(module_content).expect("Simple.move must deserialize");
         modules.insert(module.self_id().name().to_string(), module);
