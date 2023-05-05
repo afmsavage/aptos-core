@@ -66,6 +66,7 @@ where
     let cache = Cache::new_lru_cache(rocksdb_config.block_cache_size as usize)
         .expect("Create Rocksdb block cache failed.");
     table_options.set_block_cache(&cache);
+    table_options.disable_cache(); //hahahahahahaha
     let mut cfds = Vec::with_capacity(cfs.len());
     for cf_name in cfs {
         let mut cf_opts = Options::default();
